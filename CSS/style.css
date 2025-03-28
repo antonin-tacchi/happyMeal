@@ -1,0 +1,367 @@
+body{
+    margin : 0;
+    padding : 0;
+    font-family : 'Arial', sans-serif;
+    background-color : #2F3D4B;
+}
+
+a{
+    text-decoration : none;
+    color : #fff;
+}
+
+header{
+    background-color: #496680;
+}
+
+.scrollable::-webkit-scrollbar{
+    width: 100px;
+}
+
+.nav-header-main{
+    display: flex;
+    align-items: center;
+    margin-left: 2rem;
+    padding: 0.5%;
+}
+
+.logo-image{
+    width: 75px;
+    height: 75px;
+}
+
+.list-header-main{
+    display: flex;
+    list-style: none;
+
+}
+
+.list-header{
+    padding-right: 20px;
+}
+
+.search-bar{
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    margin-left: 35rem;
+    padding: 0.7%;
+    border-radius: 10px;
+    border-color: none;
+    width: 20%;
+    color: rgb(0, 0, 131);
+}
+
+.logo-loupe{
+    position: absolute;
+    left: 94%;
+    z-index: 10000;
+    width: 20px;
+    height: 20px;
+}
+
+.section-plat{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    margin-top: 2rem;
+    gap: 20px;
+}
+
+#divPlat{
+    align-items: center;
+    margin-top: 7rem;
+    background-color: #496680;
+    width: 350px;
+    height: 350px;
+    border-radius: 10px;
+}
+
+#titreRecette{
+    margin-left: 2rem;
+    margin-top: 0rem;
+    color: white;
+    font-size: 2rem;    
+    padding-right: 1.5rem;
+}
+
+/* Le style de base du popup */
+.popup {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.popup-content {
+    background-color: #fefefe;
+    margin: 10% auto;
+    padding: 20px;
+    border-radius: 10px;
+    width: 80%;
+    max-width: 600px;
+    max-height: 70vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.close-btn {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    position: absolute;
+    top: 10px;
+    right: 15px;
+}
+
+.close-btn:hover {
+    color: black;
+}
+
+.recette-title {
+    margin-right: 30px;
+    padding-right: 30px;
+    text-align: center;
+    color: #333;
+}
+
+.recette-details {
+    max-height: 50vh;
+    overflow-y: auto;
+}
+
+.recipe-info {
+    background-color: #f9f9f9;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+}
+
+.recipe-section {
+    margin-bottom: 20px;
+}
+
+.recipe-section h3 {
+    border-bottom: 2px solid #e0e0e0;
+    padding-bottom: 5px;
+    color: #444;
+}
+
+.recipe-section ul,
+.recipe-section ol {
+    padding-left: 20px;
+}
+
+.recipe-section li {
+    margin-bottom: 10px;
+}
+
+.image-recette{
+    width: 350px;
+    height: 225px;
+    border-radius: 10px;
+}
+.grille-recettes {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.carte-recette:hover {
+    transform: scale(1.05);
+}
+.pagination-container {
+    text-align: center;
+    margin-top: 20px;
+    
+}
+
+.pagination-container button {
+    padding: 10px 20px;
+    margin: 0 10px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.pagination-container button:disabled {
+    background-color: #7d9bb3 ;
+    cursor: not-allowed;
+}
+button {
+    background-color: #496680;
+    color: white; 
+    border: none;
+    padding: 10px 20px; 
+    cursor: pointer;
+    font-size: 16px; 
+}
+
+button:disabled {
+    background-color: #d2dbe5;
+    cursor: not-allowed; 
+}
+.search-bar {
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    margin-left: 35rem;
+    padding: 0.7%;
+    border-radius: 10px;
+    width: 20%;
+    color: rgb(0, 0, 131);
+    position: relative; /* Permet de positionner les résultats en fonction de la barre de recherche */
+}
+
+.search-results {
+    position: absolute;
+    top: 100%; /* Juste en dessous de la barre de recherche */
+    left: 0;
+    background: white;
+    border: 1px solid #ccc;
+    width: 100%; /* Prendre la même largeur que la barre de recherche */
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    display: none; /* Cacher par défaut */
+    margin-top: 5px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 5px; /* Coins arrondis pour une meilleure apparence */
+}
+
+.suggestion-item {
+    padding: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #ddd;
+    transition: background-color 0.2s ease;
+}
+
+.suggestion-item:hover {
+    background-color: #f0f0f0;
+}
+
+/* Animation d'affichage pour un effet fluide */
+.search-results.show {
+    display: block;
+    transition: opacity 0.3s ease;
+}
+
+/* Pour les ajustements sur le reste de la barre de navigation */
+.nav-header-main {
+    display: flex;
+    align-items: center;
+    margin-left: 2rem;
+    padding: 0.5%;
+    position: relative; /* Assurez-vous que les éléments enfants sont bien positionnés relativement à ce conteneur */
+}
+
+
+@media screen and (min-width: 1024px) and (max-width: 1280px){
+    .search-bar{
+        margin-left: 17rem;
+        width: 15%;
+    }
+    .logo-loupe{
+        left: 90%;
+    }
+}
+
+@media screen and (min-width:1024px){
+    .nav-header-burger{
+        display: none;
+    }
+}
+
+@media screen and (max-width: 1023px) {
+    .nav-header-main{
+        display: none;
+    }
+
+    .nav-header-burger {
+        display: block;
+        padding: 1rem;
+    }
+
+    .burger-container {
+        position: relative;
+    }
+
+    .burger-icon {
+        position: relative;
+        z-index: 10000;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        width: 30px;
+        height: 20px;
+        justify-content: space-between;
+    }
+
+    .burger-icon span {
+        width: 100%;
+        height: 3px;
+        background-color: white;
+        transition: all 0.3s ease;
+    }
+
+    .burger-menu {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 50%;
+        height:100%;
+        background-color: #496680;
+        z-index: 1000;
+        padding: 2rem;
+    }
+
+    .burger-menu.active {
+        display: block;
+    }
+
+    .logo-image-burger {
+        width: 100px;
+        height: 100px;
+        display: block;
+        margin: 0 auto 2rem;
+    }
+
+    .list-header-burger {
+        display: flex;
+        flex-direction: column;
+        list-style: none;
+        padding: 0;
+        text-align: center;
+        gap: 2rem;
+    }
+
+    .list-header-burger a {
+        font-size: 1.5rem;
+        color: white;
+        text-decoration: none;
+    }
+
+    .burger-icon.active span:nth-child(1) {
+        transform: rotate(45deg) translate(5px, 5px);
+    }
+
+    .burger-icon.active span:nth-child(2) {
+        opacity: 0;
+    }
+
+    .burger-icon.active span:nth-child(3) {
+        transform: rotate(-45deg) translate(5px, -5px);
+    }
+}

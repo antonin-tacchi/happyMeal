@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../CSS/style.css" />
+    <script defer src="../Script/index.js"></script>
+    <title>Document</title>
+  </head>
+  <body>
+    <header>
+      <nav class="nav-header-main">
+        <img
+          class="logo-image"
+          src="../Assets/logo.png"
+          alt="Logo de l'entreprise"
+        />
+        <ul class="list-header-main">
+          <li class="list-header"><a href="index.html">Acceuil</a></li>
+          <li class="list-header"><a href="#">Recette</a></li>
+          <li class="list-header"><a href="#">Sélection</a></li>
+          <li class="list-header"><a href="#">Favoris</a></li>
+          <li class="list-header"><a href="#">Panier</a></li>
+        </ul>
+        <input type="text" class="search-bar" placeholder="Rechercher" />
+        <img
+          class="logo-loupe"
+          src="https://www.freeiconspng.com/thumbs/search-icon-png/search-icon-png-21.png"
+          alt="logo de loupe de recherche"
+        />
+      </nav>
+    </header>
+
+    <main>
+      <section id="section-plat" class="section-plat"></section>
+
+    <!-- Le Popup -->
+    <div id="popup" class="popup">
+        <div class="popup-content">
+            <h2 id="popup-title"></h2>
+            <p id="popup-description"></p>
+            <img id="popup-image" src="" alt="Image du plat" />
+            <ul id="popup-ingredients"></ul>
+            <ol id="popup-steps"></ol>
+            <span id="closeBtn" class="close-btn">&times;</span>
+        </div>
+    </div>
+
+    </main>
+
+    <footer>
+      <nav>
+        <ul></ul>
+      </nav>
+    </footer>
+    <script src="../script/recherche.js"></script>
+    <script src="../script/pop_up.js"></script>
+  </body>
+</html>
