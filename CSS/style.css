@@ -774,6 +774,7 @@ button:disabled {
 @media screen and (max-width: 1024px) {
     .grille-recettes {
         grid-template-columns: repeat(2, 1fr);
+        place-items: center;
     }
 }
 
