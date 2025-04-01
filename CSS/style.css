@@ -450,7 +450,7 @@ button:disabled {
 }
 
 .burger-container {
-    position: fixed;
+    position: absolute;
     top: 15px;
     right: 15px;
     padding: 0.5rem;
@@ -654,11 +654,15 @@ button:disabled {
     transform: translateY(0);
 }
 
+
+/* ------------------Planning------------------ */
 .divNomRecette{
     background-color: #496680;
     width: 275px;  
     margin-left: 2rem;
     text-align: center;
+    cursor: -webkit-grab;
+    cursor: grab;
 }
 
 .titreRecettePlanning{
@@ -718,6 +722,14 @@ button:disabled {
     background-color: #4f4f4f;
 }
 
+.bouton-sauvegarder{
+    margin-top: 2rem;
+    margin-left: 2rem;
+    margin-bottom: 2rem;
+}
+
+/* --------------------------Respnsive-------------------------- */
+/* --------------------------Burger Buton-------------------------- */
 @media screen and (max-width: 1023px) {
     .nav-header-burger {
         display: block;
@@ -731,23 +743,14 @@ button:disabled {
         min-height: 60px;
         position: relative;
     }
-    .planningTable {
-        display: flex;
-        flex-direction: row;
-        width: 100%;
-        margin-right: 0;
-        margin-left: 0;
+    .planningTable{
+        margin-left: 2rem;
     }
-    .planningTable th {
-        display: flex;
-        flex-direction: column;
-        height: 82px;
+    .divNomRecette{
+        width: 200px;  
     }
-    .planningTable td {
-        display: flex;
-        flex-direction: column;
-        height: 100px;
-        width: 100px;
+    .titreRecettePlanning{
+        font-size: 1rem;
     }
 }
 
@@ -766,7 +769,8 @@ button:disabled {
         display: none;
     }
 }
-/* Responsive Breakpoints */
+
+/* --------------------------Planning-------------------------- */
 @media screen and (max-width: 1024px) {
     .grille-recettes {
         grid-template-columns: repeat(2, 1fr);
@@ -778,7 +782,7 @@ button:disabled {
         grid-template-columns: 1fr;
     }
 
-    #titreRecette {
+    .titreRecette {
         font-size: 1.2rem;
     }
 
@@ -801,12 +805,12 @@ button:disabled {
         margin-top: 0.5rem;
     }
 
-    #divPlat {
+    .divPlat {
         max-width: 300px;
         max-height: 220px;
     }
 
-    #titreRecette {
+    .titreRecette {
         font-size: 1rem;
         padding: 0.5rem;
     }
@@ -820,3 +824,4 @@ button:disabled {
         font-size: 0.9rem;
     }
 }
+
