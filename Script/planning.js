@@ -9,11 +9,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Récupérer les favoris du localStorage
     const favoris = JSON.parse(localStorage.getItem('favoris')) || [];
     console.log('Favoris récupérés:', favoris);
+    
+    // Récupérer le planning sauvegardé s'il existe
+    const planningEnregistre = JSON.parse(localStorage.getItem('planning')) || {};
+    console.log('Planning récupéré:', planningEnregistre);
 
-    // Créer le tableau des jours de la semaine
     const joursSemaine = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
+    const moments = ["Midi", "Soir"];
 
-    // Conteneur pour les plats non placés
     const conteneurInitial = document.createElement('div');
     conteneurInitial.id = "conteneurInitial";
     conteneurInitial.classList.add('conteneurInitial');
@@ -23,18 +26,16 @@ document.addEventListener('DOMContentLoaded', () => {
     table.id = "planningTable";
     table.classList.add('planningTable');
 
-    // Créer l'en-tête du tableau
     const thead = document.createElement('thead');
     const headerRow = document.createElement('tr');
 
-    // Ajouter une colonne vide pour l'étiquette des jours
     const emptyTh = document.createElement('th');
     headerRow.appendChild(emptyTh);
 
-    // Ajouter les jours de la semaine
-    joursSemaine.forEach(jour => {
+    // Ajouter Midi et Soir comme en-têtes de colonnes
+    moments.forEach(moment => {
         const th = document.createElement('th');
-        th.textContent = jour;
+        th.textContent = moment;
         th.style.border = "2px solid black";
         headerRow.appendChild(th);
     });
@@ -42,21 +43,22 @@ document.addEventListener('DOMContentLoaded', () => {
     thead.appendChild(headerRow);
     table.appendChild(thead);
 
-    // Créer le corps du tableau
     const tbody = document.createElement('tbody');
 
-    ["Midi", "Soir"].forEach(moment => {
+    // Créer une ligne pour chaque jour de la semaine
+    joursSemaine.forEach(jour => {
         const row = document.createElement('tr');
 
-        // Ajoute l'étiquette "Midi" ou "Soir" à gauche
         const labelTd = document.createElement('td');
-        labelTd.textContent = moment;
+        labelTd.textContent = jour;
         row.appendChild(labelTd);
 
-        // Crée une cellule de dropzone pour chaque jour
-        joursSemaine.forEach(() => {
+        // Créer une cellule pour chaque moment (Midi, Soir)
+        moments.forEach(moment => {
             const td = document.createElement('td');
             td.classList.add('dropzone');
+            td.dataset.jour = jour;
+            td.dataset.moment = moment;
             row.appendChild(td);
         });
 
@@ -64,13 +66,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     table.appendChild(tbody);
-    document.body.appendChild(table); // Ajouter le tableau à la page
+    document.body.appendChild(table); 
 
-    // Ajouter les recettes au conteneur initial
+    // Créer les éléments pour les recettes favorites
     favoris.forEach((recette, index) => {
         const divPlat = document.createElement('div');
         divPlat.classList.add('divNomRecette');
-        divPlat.setAttribute('id', 'recette-' + index); // ID unique
+        divPlat.setAttribute('id', 'recette-' + index); 
+        divPlat.dataset.recetteId = index;
+        divPlat.dataset.nom = recette;
 
         const titreRecette = document.createElement('h2');
         titreRecette.classList.add('titreRecettePlanning');
@@ -80,30 +84,128 @@ document.addEventListener('DOMContentLoaded', () => {
         conteneurInitial.appendChild(divPlat);
     });
 
-    // Activer le drag & drop avec jQuery UI
-    $(function(){
-        $('.divNomRecette').draggable({
-            revert: "invalid",
-            start: function(event, ui) {
-                $(this).data("origine", $(this).parent()); // Sauvegarde du conteneur d'origine
+    // Ajouter un bouton pour sauvegarder le planning
+    const boutonSauvegarder = document.createElement('button');
+    boutonSauvegarder.textContent = 'Sauvegarder le planning';
+    boutonSauvegarder.id = 'sauvegarderPlanning';
+    boutonSauvegarder.classList.add('bouton-sauvegarder');
+    document.body.appendChild(boutonSauvegarder);
+
+    // Restaurer le planning précédemment sauvegardé
+    if (planningEnregistre) {
+        Object.keys(planningEnregistre).forEach(position => {
+            const [jour, moment] = position.split('-');
+            const recetteId = planningEnregistre[position];
+            
+            if (recetteId !== null) {
+                const recetteElement = document.querySelector(`.divNomRecette[data-recette-id="${recetteId}"]`);
+                const cellule = document.querySelector(`.dropzone[data-jour="${jour}"][data-moment="${moment}"]`);
+                
+                if (recetteElement && cellule) {
+                    cellule.appendChild(recetteElement);
+                }
             }
         });
+    }
 
-        $('.dropzone').droppable({
-            accept: ".divNomRecette",
-            drop: function(event, ui) {
-                $(this).empty(); // Supprime l'ancien contenu
-                $(this).append(ui.helper); // Ajoute la recette
-                ui.helper.css({top: 0, left: 0}); // Réinitialise la position
+    // Fonction pour sauvegarder le planning
+    function sauvegarderPlanning() {
+        const planning = {};
+        
+        // Parcourir toutes les cellules du planning
+        document.querySelectorAll('.dropzone').forEach(cellule => {
+            const jour = cellule.dataset.jour;
+            const moment = cellule.dataset.moment;
+            const recetteElement = cellule.querySelector('.divNomRecette');
+            
+            // Créer une clé unique pour chaque cellule (ex: "Lundi-Midi")
+            const position = `${jour}-${moment}`;
+            
+            if (recetteElement) {
+                planning[position] = recetteElement.dataset.recetteId;
+            } else {
+                planning[position] = null;
             }
         });
+        
+        // Sauvegarder dans localStorage
+        localStorage.setItem('planning', JSON.stringify(planning));
+        console.log('Planning sauvegardé:', planning);
+        
+        // Afficher un message à l'utilisateur
+        alert('Planning sauvegardé avec succès!');
+    }
 
-        // Permet de remettre un plat à sa place initiale
+    // Écouter le clic sur le bouton de sauvegarde
+    boutonSauvegarder.addEventListener('click', sauvegarderPlanning);
+
+    // Initialiser draggable/droppable avec des paramètres spécifiques pour mobile
+    $(function() {
+        // Configuration générale pour tous les appareils
+        $('.divNomRecette').each(function() {
+            $(this).draggable({
+                revert: "invalid",
+                scroll: true,
+                scrollSensitivity: 40,
+                scrollSpeed: 40,
+                containment: "document",
+                cursor: "move",
+                opacity: 0.7,
+                helper: "original",
+                start: function(event, ui) {
+                    $(this).data("origine", $(this).parent());
+                    $(this).addClass("being-dragged");
+                },
+                stop: function(event, ui) {
+                    $(this).removeClass("being-dragged");
+                }
+            });
+        });
+
+        $('.dropzone').each(function() {
+            $(this).droppable({
+                accept: ".divNomRecette",
+                tolerance: "pointer",
+                drop: function(event, ui) {
+                    const dropzone = $(this);
+                    
+                    // Vérifier si la dropzone contient déjà une recette
+                    if (dropzone.find('.divNomRecette').length > 0) {
+                        // Annuler le drop
+                        return false;
+                    }
+                    
+                    const draggable = ui.draggable;
+                    const origin = draggable.data("origine");
+                    
+                    // Déplacer l'élément dans la nouvelle zone
+                    dropzone.append(draggable);
+                    
+                    // Réinitialiser la position
+                    draggable.css({
+                        top: '0',
+                        left: '0',
+                        position: 'relative'
+                    });
+                }
+            });
+        });
+        
         $('#conteneurInitial').droppable({
             accept: ".divNomRecette",
+            tolerance: "pointer",
             drop: function(event, ui) {
-                $(this).append(ui.helper); // Replace dans le conteneur
-                ui.helper.css({top: 0, left: 0}); // Réinitialise la position
+                const draggable = ui.draggable;
+                
+                // Déplacer l'élément vers le conteneur initial
+                $(this).append(draggable);
+                
+                // Réinitialiser la position
+                draggable.css({
+                    top: '0',
+                    left: '0',
+                    position: 'relative'
+                });
             }
         });
     });
