@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const titreRecette = document.createElement('h2');
         titreRecette.classList.add('titreRecettePlanning');
-        titreRecette.textContent = recette || 'Nom non disponible';
+        titreRecette.textContent = recette
 
         divPlat.appendChild(titreRecette);
         conteneurInitial.appendChild(divPlat);
