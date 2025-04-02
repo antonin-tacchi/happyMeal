@@ -6,6 +6,9 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
+    // Détection du type d'appareil
+    const isMobile = window.innerWidth < 1024;
+    
     // Récupérer les favoris du localStorage
     const favoris = JSON.parse(localStorage.getItem('favoris')) || [];
     console.log('Favoris récupérés:', favoris);
@@ -32,7 +35,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const emptyTh = document.createElement('th');
     headerRow.appendChild(emptyTh);
 
-    // Ajouter Midi et Soir comme en-têtes de colonnes
     moments.forEach(moment => {
         const th = document.createElement('th');
         th.textContent = moment;
@@ -45,7 +47,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const tbody = document.createElement('tbody');
 
-    // Créer une ligne pour chaque jour de la semaine
     joursSemaine.forEach(jour => {
         const row = document.createElement('tr');
 
@@ -53,12 +54,19 @@ document.addEventListener('DOMContentLoaded', () => {
         labelTd.textContent = jour;
         row.appendChild(labelTd);
 
-        // Créer une cellule pour chaque moment (Midi, Soir)
         moments.forEach(moment => {
             const td = document.createElement('td');
             td.classList.add('dropzone');
             td.dataset.jour = jour;
             td.dataset.moment = moment;
+            
+            // Pour mobile : ajouter un sélecteur
+            if (isMobile) {
+                td.addEventListener('click', () => {
+                    selecteurRecetteMobile(jour, moment);
+                });
+            }
+            
             row.appendChild(td);
         });
 
@@ -68,7 +76,6 @@ document.addEventListener('DOMContentLoaded', () => {
     table.appendChild(tbody);
     document.body.appendChild(table); 
 
-    // Créer les éléments pour les recettes favorites
     favoris.forEach((recette, index) => {
         const divPlat = document.createElement('div');
         divPlat.classList.add('divNomRecette');
@@ -84,14 +91,79 @@ document.addEventListener('DOMContentLoaded', () => {
         conteneurInitial.appendChild(divPlat);
     });
 
-    // Ajouter un bouton pour sauvegarder le planning
     const boutonSauvegarder = document.createElement('button');
     boutonSauvegarder.textContent = 'Sauvegarder le planning';
     boutonSauvegarder.id = 'sauvegarderPlanning';
     boutonSauvegarder.classList.add('bouton-sauvegarder');
     document.body.appendChild(boutonSauvegarder);
 
-    // Restaurer le planning précédemment sauvegardé
+    function selecteurRecetteMobile(jour, moment) {
+        if (!isMobile) return;
+
+        const cellule = document.querySelector(`.dropzone[data-jour="${jour}"][data-moment="${moment}"]`);
+        
+        const modal = document.createElement('div');
+        modal.classList.add('modal-selecteur-mobile');
+        
+        const modalContent = document.createElement('div');
+        modalContent.classList.add("modal-content")
+        
+        const titre = document.createElement('h3');
+        titre.textContent = `Choisir un plat pour ${jour} ${moment}`;
+        
+        const fermer = document.createElement('button');
+        fermer.textContent = 'Fermer';
+        fermer.style.marginBottom = '20px';
+        fermer.addEventListener('click', () => {
+            document.body.removeChild(modal);
+        });
+        
+        const listeRecettes = document.createElement('div');
+        
+        const optionVide = document.createElement('div');
+        optionVide.classList.add('option-recette-mobile');
+        optionVide.textContent = '-- Vider la cellule --';
+        
+        optionVide.addEventListener('click', () => {
+            while (cellule.firstChild) {
+                conteneurInitial.appendChild(cellule.firstChild);
+            }
+            document.body.removeChild(modal);
+        });
+        
+        listeRecettes.appendChild(optionVide);
+
+        favoris.forEach((recette, index) => {
+            const option = document.createElement('div');
+            option.classList.add('option-recette-mobile');
+            option.textContent = recette;
+            option.dataset.recetteId = index;
+            
+            option.addEventListener('click', () => {
+                while (cellule.firstChild) {
+                    conteneurInitial.appendChild(cellule.firstChild);
+                }
+
+                const recetteElement = document.querySelector(`.divNomRecette[data-recette-id="${index}"]`);
+                if (recetteElement) {
+                    cellule.appendChild(recetteElement);
+                }
+                
+                document.body.removeChild(modal);
+            });
+            
+            listeRecettes.appendChild(option);
+        });
+        
+        modalContent.appendChild(titre);
+        modalContent.appendChild(listeRecettes);
+        modalContent.appendChild(fermer);
+        modal.appendChild(modalContent);
+        
+        document.body.appendChild(modal);
+    }
+
+    // Restaurer le planning sauvegardé
     if (planningEnregistre) {
         Object.keys(planningEnregistre).forEach(position => {
             const [jour, moment] = position.split('-');
@@ -112,13 +184,11 @@ document.addEventListener('DOMContentLoaded', () => {
     function sauvegarderPlanning() {
         const planning = {};
         
-        // Parcourir toutes les cellules du planning
         document.querySelectorAll('.dropzone').forEach(cellule => {
             const jour = cellule.dataset.jour;
             const moment = cellule.dataset.moment;
             const recetteElement = cellule.querySelector('.divNomRecette');
-            
-            // Créer une clé unique pour chaque cellule (ex: "Lundi-Midi")
+
             const position = `${jour}-${moment}`;
             
             if (recetteElement) {
@@ -128,60 +198,70 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
         
-        // Sauvegarder dans localStorage
         localStorage.setItem('planning', JSON.stringify(planning));
         console.log('Planning sauvegardé:', planning);
         
-        // Afficher un message à l'utilisateur
         alert('Planning sauvegardé avec succès!');
     }
 
-    // Écouter le clic sur le bouton de sauvegarde
     boutonSauvegarder.addEventListener('click', sauvegarderPlanning);
 
-    // Initialiser draggable/droppable avec des paramètres spécifiques pour mobile
-    $(function() {
-        // Configuration générale pour tous les appareils
-        $('.divNomRecette').each(function() {
-            $(this).draggable({
-                revert: "invalid",
-                scroll: true,
-                scrollSensitivity: 40,
-                scrollSpeed: 40,
-                containment: "document",
-                cursor: "move",
-                opacity: 0.7,
-                helper: "original",
-                start: function(event, ui) {
-                    $(this).data("origine", $(this).parent());
-                    $(this).addClass("being-dragged");
-                },
-                stop: function(event, ui) {
-                    $(this).removeClass("being-dragged");
-                }
+    if (!isMobile) {
+        $(function() {
+            $('.divNomRecette').each(function() {
+                $(this).draggable({
+                    revert: "invalid",
+                    scroll: true,
+                    scrollSensitivity: 40,
+                    scrollSpeed: 40,
+                    containment: "document",
+                    cursor: "move",
+                    opacity: 0.7,
+                    helper: "original",
+                    start: function(event, ui) {
+                        $(this).data("origine", $(this).parent());
+                        $(this).addClass("being-dragged");
+                    },
+                    stop: function(event, ui) {
+                        $(this).removeClass("being-dragged");
+                    }
+                });
             });
-        });
 
-        $('.dropzone').each(function() {
-            $(this).droppable({
+            $('.dropzone').each(function() {
+                $(this).droppable({
+                    accept: ".divNomRecette",
+                    tolerance: "pointer",
+                    drop: function(event, ui) {
+                        const dropzone = $(this);
+                        
+                        if (dropzone.find('.divNomRecette').length > 0) {
+                            // Annuler le drop
+                            return false;
+                        }
+                        
+                        const draggable = ui.draggable;
+                        const origin = draggable.data("origine");
+                        
+                        dropzone.append(draggable);
+                        
+                        draggable.css({
+                            top: '0',
+                            left: '0',
+                            position: 'relative'
+                        });
+                    }
+                });
+            });
+            
+            $('#conteneurInitial').droppable({
                 accept: ".divNomRecette",
                 tolerance: "pointer",
                 drop: function(event, ui) {
-                    const dropzone = $(this);
-                    
-                    // Vérifier si la dropzone contient déjà une recette
-                    if (dropzone.find('.divNomRecette').length > 0) {
-                        // Annuler le drop
-                        return false;
-                    }
-                    
                     const draggable = ui.draggable;
-                    const origin = draggable.data("origine");
                     
-                    // Déplacer l'élément dans la nouvelle zone
-                    dropzone.append(draggable);
+                    $(this).append(draggable);
                     
-                    // Réinitialiser la position
                     draggable.css({
                         top: '0',
                         left: '0',
@@ -190,23 +270,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         });
+    }
+    
+    window.addEventListener('resize', function() {
+        const wasMobile = isMobile;
+        const newIsMobile = window.innerWidth < 1024;
         
-        $('#conteneurInitial').droppable({
-            accept: ".divNomRecette",
-            tolerance: "pointer",
-            drop: function(event, ui) {
-                const draggable = ui.draggable;
-                
-                // Déplacer l'élément vers le conteneur initial
-                $(this).append(draggable);
-                
-                // Réinitialiser la position
-                draggable.css({
-                    top: '0',
-                    left: '0',
-                    position: 'relative'
-                });
-            }
-        });
+        if (wasMobile !== newIsMobile) {
+            location.reload();
+        }
     });
 });

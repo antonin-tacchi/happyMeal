@@ -30,7 +30,6 @@ document.addEventListener('DOMContentLoaded', () => {
     popup.appendChild(popupContent);
     main.appendChild(popup);
 
-    // New function to handle displaying popup
     function afficherPopup(recetteData) {
         const favoris = JSON.parse(localStorage.getItem('favoris')) || [];
         const isCurrentlyFavorite = favoris.includes(recetteData.nom);
@@ -77,7 +76,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const starEmpty = document.getElementById('star-empty');
         const starFilled = document.getElementById('star-filled');
         
-        // Remove previous event listeners to prevent multiple bindings
         const oldStarContainer = document.getElementById('star-toggle');
         const newStarContainer = oldStarContainer.cloneNode(true);
         oldStarContainer.parentNode.replaceChild(newStarContainer, oldStarContainer);
@@ -100,23 +98,19 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Existing functions remain the same
     function toggleFavorite(recetteNom) {
         let favoris = JSON.parse(localStorage.getItem('favoris')) || [];
         
         const index = favoris.indexOf(recetteNom);
         
         if (index > -1) {
-            // Retire des favoris si déjà présente
             favoris.splice(index, 1);
         } else {
-            // Ajoute aux favoris
             favoris.push(recetteNom);
         }
         
         localStorage.setItem('favoris', JSON.stringify(favoris));
-        
-        // Mettre à jour l'UI des favoris sur la page courante
+
         updateFavoriteUI();
     }
 
