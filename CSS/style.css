@@ -717,6 +717,84 @@ button:disabled {
     height: 100px;
     background-color: #4f4f4f;
 }
+/* Styles pour la liste de courses */
+.liste-courses-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.ajout-manuel {
+    display: flex;
+    margin-bottom: 20px;
+}
+
+#input-item {
+    flex-grow: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px 0 0 4px;
+}
+
+#ajouter-button {
+    padding: 10px 15px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 0 4px 4px 0;
+    cursor: pointer;
+}
+
+.liste-ingredients {
+    list-style-type: none;
+    padding: 0;
+}
+
+.item-course {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    margin-bottom: 5px;
+    background-color: #f9f9f9;
+    border-radius: 4px;
+}
+
+.quantite-container {
+    display: flex;
+    align-items: center;
+}
+
+.btn-quantite {
+    width: 30px;
+    height: 30px;
+    font-size: 16px;
+    margin: 0 5px;
+    border: none;
+    border-radius: 50%;
+    background-color: #ddd;
+    cursor: pointer;
+}
+
+.quantite-valeur {
+    margin: 0 5px;
+    font-weight: bold;
+}
+
+.btn-supprimer {
+    padding: 5px 10px;
+    background-color: #f44336;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#message-vide {
+    text-align: center;
+    color: #888;
+    font-style: italic;
+}
 
 @media screen and (max-width: 1023px) {
     .nav-header-burger {

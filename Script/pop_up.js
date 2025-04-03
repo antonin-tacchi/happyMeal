@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function afficherPopup(recetteData) {
         const favoris = JSON.parse(localStorage.getItem('favoris')) || [];
         const isCurrentlyFavorite = favoris.includes(recetteData.nom);
-        
+
         recetteDetails.innerHTML = `
             <div class="header-pop_up">
                 <h2 class="recipe-name">${recetteData.nom}</h2>
@@ -53,9 +53,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="igredients-section">
                     <h3>Ingrédients:</h3>
                     <ul>
-                        ${recetteData.ingredients.map(ingredient => 
-                            `<li>${ingredient.nom}: ${ingredient.quantite} ${ingredient.unite || ''}</li></li>`
-                        ).join('')}
+                    ${recetteData.ingredients.map(ingredient => 
+                        `<li>${ingredient.nom}: ${ingredient.quantite} ${ingredient.unite || ''}
+                        <button class="btn-ajouter-course" data-nom="${ingredient.nom}" data-quantite="${ingredient.quantite}" data-unite="${ingredient.unite || ''}">Ajouter</button></li>`
+                    ).join('')}
                     </ul>
                 </div>
                 <div class="etoile_favoris">
@@ -70,26 +71,26 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             </div>
         `;
-        
+
         popup.style.display = 'block';
-        
+
         const starContainer = document.getElementById('star-toggle');
         const starEmpty = document.getElementById('star-empty');
         const starFilled = document.getElementById('star-filled');
-        
+
         // Remove previous event listeners to prevent multiple bindings
         const oldStarContainer = document.getElementById('star-toggle');
         const newStarContainer = oldStarContainer.cloneNode(true);
         oldStarContainer.parentNode.replaceChild(newStarContainer, oldStarContainer);
-        
+
         newStarContainer.addEventListener('click', () => {
             const recetteNom = newStarContainer.dataset.recetteNom;
-            
+
             toggleFavorite(recetteNom);
-            
+
             const starEmpty = newStarContainer.querySelector('#star-empty');
             const starFilled = newStarContainer.querySelector('#star-filled');
-            
+
             if (starEmpty.style.display === 'block') {
                 starEmpty.style.display = 'none';
                 starFilled.style.display = 'block';
@@ -98,14 +99,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 starFilled.style.display = 'none';
             }
         });
+        // Ajouter les écouteurs d'événements pour les boutons "Ajouter" des ingrédients
+        const btnAjouterCourses = document.querySelectorAll('.btn-ajouter-course');
+        btnAjouterCourses.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const nom = this.dataset.nom;
+            const quantite = this.dataset.quantite;
+            const unite = this.dataset.unite;
+            ajouterAListeCourses(nom, quantite, unite);
+    });
+});
     }
 
     // Existing functions remain the same
     function toggleFavorite(recetteNom) {
         let favoris = JSON.parse(localStorage.getItem('favoris')) || [];
-        
+
         const index = favoris.indexOf(recetteNom);
-        
+
         if (index > -1) {
             // Retire des favoris si déjà présente
             favoris.splice(index, 1);
@@ -113,29 +124,29 @@ document.addEventListener('DOMContentLoaded', () => {
             // Ajoute aux favoris
             favoris.push(recetteNom);
         }
-        
+
         localStorage.setItem('favoris', JSON.stringify(favoris));
-        
+
         // Mettre à jour l'UI des favoris sur la page courante
         updateFavoriteUI();
     }
 
     function updateFavoriteUI() {
         const favoris = JSON.parse(localStorage.getItem('favoris')) || [];
-        
+
         const recetteElements = document.querySelectorAll('#divPlat');
-        
+
         recetteElements.forEach(element => {
             const recetteData = JSON.parse(element.dataset.recette);
             const recetteId = recetteData.nom;
-            
+
             let starContainer = element.querySelector('.star-favoris');
             if (!starContainer) {
                 starContainer = document.createElement('div');
                 starContainer.classList.add('star-favoris');
                 element.appendChild(starContainer);
             }
-            
+
             starContainer.innerHTML = favoris.includes(recetteId) 
                 ? `
                     <svg width="30" height="30" viewBox="0 0 24 24" fill="gold" stroke="gold" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -147,12 +158,42 @@ document.addEventListener('DOMContentLoaded', () => {
                         <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
                     </svg>
                 `;
+
+            // Ajouter un écouteur d'événement pour basculer les favoris
+            starContainer.onclick = (event) => {
+                event.stopPropagation(); // Empêcher la propagation au div parent
+                toggleFavorite(recetteId);
+            };
         });
     }
 
+    // Déclarons cette fonction dans le scope global
+function ajouterAListeCourses(nom, quantite, unite) {
+    let listeCourses = JSON.parse(localStorage.getItem('listeCourses')) || [];
+    
+    // Vérifier si l'ingrédient existe déjà
+    const index = listeCourses.findIndex(item => item.nom === nom);
+    
+    if (index === -1) {
+        // Ajouter le nouvel ingrédient
+        listeCourses.push({
+            nom: nom,
+            quantite: quantite,
+            unite: unite || ''
+        });
+        alert(`${nom} ajouté à la liste de courses.`);
+    } else {
+        // Incrémenter la quantité si l'ingrédient existe déjà
+        listeCourses[index].quantite = parseFloat(listeCourses[index].quantite) + parseFloat(quantite);
+        alert(`Quantité de ${nom} mise à jour dans la liste de courses.`);
+    }
+    
+    localStorage.setItem('listeCourses', JSON.stringify(listeCourses));
+}
+
     sectionPlat.addEventListener('click', (event) => {
         const divPlat = event.target.closest('#divPlat');
-        
+
         if (divPlat) {
             const recetteData = JSON.parse(divPlat.dataset.recette);
             afficherPopup(recetteData);

@@ -1,14 +1,14 @@
 document.addEventListener('DOMContentLoaded', () => {
     const sectionPlat = document.querySelector('.section-plat');
-    
+
     if (!sectionPlat) {
         console.error('Section non trouvée. Vérifiez votre sélecteur.');
         return;
     }
-    
+
     // Récupérer les favoris du localStorage
     const favoris = JSON.parse(localStorage.getItem('favoris')) || [];
-    
+
     const RECETTES_PAR_PAGE = 9;
     let pageActuelle = 1;
 
@@ -23,16 +23,16 @@ document.addEventListener('DOMContentLoaded', () => {
         recettesPage.forEach(recette => {
             const divPlat = document.createElement('div');
             divPlat.id = "divPlat";
-            
+
             const imageRecette = document.createElement('img');
             imageRecette.src = recette.image;
             imageRecette.alt = recette.nom;
             imageRecette.classList.add('image-recette');
-            
+
             const titreRecette = document.createElement('h2');
             titreRecette.id = "titreRecette";
             titreRecette.textContent = recette.nom;
-            
+
             // Créer le conteneur de l'étoile
             const starContainer = document.createElement('div');
             starContainer.classList.add('star-favoris');
@@ -47,18 +47,19 @@ document.addEventListener('DOMContentLoaded', () => {
                         <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
                     </svg>
                 `;
-            
+
             // Ajouter un écouteur d'événement pour basculer les favoris
             starContainer.onclick = (event) => {
                 event.stopPropagation(); // Empêcher la propagation au div parent
                 toggleFavorite(recette.nom);
             };
-            
+
             divPlat.dataset.recette = JSON.stringify(recette);
+
             divPlat.appendChild(starContainer);
             divPlat.appendChild(imageRecette);
             divPlat.appendChild(titreRecette);
-            
+
             grilleRecettes.appendChild(divPlat);
         });
 

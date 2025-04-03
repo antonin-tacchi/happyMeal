@@ -8,6 +8,7 @@
     <script defer src="../Script/burgerButton.js"></script>
     <script defer src="../Script/favoris.js"></script>
     <script defer src="../Script/recherche.js"></script>
+    
     <title>Happy Meal</title>
 </head>
 <body>
@@ -19,7 +20,7 @@
                 <li class="list-header"><a href="recette.html">Recette</a></li>
                 <li class="list-header"><a href="planning.html">Sélection</a></li>
                 <li class="list-header"><a href="favoris.html">Favoris</a></li>
-                <li class="list-header"><a href="#">Panier</a></li>
+                <li class="list-header"><a href="liste_courses.html">Liste de Courses</a></li>
             </ul>
             <input type="text" class="search-bar" placeholder="Rechercher">
             <img class="logo-loupe" src="https://www.freeiconspng.com/thumbs/search-icon-png/search-icon-png-21.png" alt="logo de loupe de recherche">
@@ -43,7 +44,7 @@
                         <li class="list-header-burger"><a href="recette.html">Recette</a></li>
                         <li class="list-header-burger"><a href="planning.html">Sélection</a></li>
                         <li class="list-header-burger"><a href="favoris.html">Favoris</a></li>
-                        <li class="list-header-burger"><a href="#">Panier</a></li>
+                        <li class="list-header-burger"><a href="liste_courses.html">Panier</a></li>
                     </ul>
                 </div>
             </div>
@@ -52,17 +53,22 @@
 
     <main id="main">
         <section id="section-plat" class="section-plat">
-            
+            <input type="text" id="input-item" placeholder="Ajouter un élément">
+            <button id="ajouter-button">Ajouter</button>
+            <ul id="liste-courses"></ul>
+            <p id="message-vide" style="display: none;">La liste de courses est vide.</p>
         </section>
     </main>
 
     <footer>
         <nav>
             <ul>
-
+                <!-- Liens du footer -->
             </ul>
         </nav>
     </footer>
+
+    <script defer src="../Script/liste_courses.js"></script>    
     <script src="../Script/pop_up.js"></script>
 </body>
 </html>
