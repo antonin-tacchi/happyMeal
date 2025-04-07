@@ -181,11 +181,9 @@ function ajouterAListeCourses(nom, quantite, unite) {
             quantite: quantite,
             unite: unite || ''
         });
-        alert(`${nom} ajouté à la liste de courses.`);
     } else {
         // Incrémenter la quantité si l'ingrédient existe déjà
         listeCourses[index].quantite = parseFloat(listeCourses[index].quantite) + parseFloat(quantite);
-        alert(`Quantité de ${nom} mise à jour dans la liste de courses.`);
     }
     
     localStorage.setItem('listeCourses', JSON.stringify(listeCourses));

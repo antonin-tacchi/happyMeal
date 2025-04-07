@@ -4,26 +4,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const listeCourses = document.getElementById('liste-courses');
     const messageVide = document.getElementById('message-vide');
     
-    // Charger la liste des courses depuis le localStorage
     function chargerListeCourses() {
         const liste = JSON.parse(localStorage.getItem('listeCourses')) || [];
         
-        // Afficher le message si la liste est vide
         if (liste.length === 0) {
             messageVide.style.display = 'block';
         } else {
             messageVide.style.display = 'none';
         }
         
-        // Vider la liste actuelle avant de la remplir à nouveau
         listeCourses.innerHTML = '';
         
-        // Ajouter chaque élément à la liste
         liste.forEach((ingredient, index) => {
             const li = document.createElement('li');
             li.className = 'item-course';
             
-            // Créer le contenu de l'élément
             const nomIngredient = document.createElement('span');
             nomIngredient.textContent = ingredient.nom;
             
@@ -52,7 +47,6 @@ document.addEventListener('DOMContentLoaded', () => {
             btnSupprimer.className = 'btn-supprimer';
             btnSupprimer.addEventListener('click', () => supprimerIngredient(index));
             
-            // Assembler l'élément
             quantiteContainer.appendChild(btnMoins);
             quantiteContainer.appendChild(quantiteSpan);
             quantiteContainer.appendChild(uniteSpan);
@@ -66,71 +60,52 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // Fonction pour modifier la quantité d'un ingrédient
     function modifierQuantite(index, delta) {
         const liste = JSON.parse(localStorage.getItem('listeCourses')) || [];
         
-        // Vérifier que l'index existe dans la liste
         if (index >= 0 && index < liste.length) {
-            // Augmenter ou diminuer la quantité (minimum 1)
             liste[index].quantite = Math.max(1, parseFloat(liste[index].quantite) + delta);
             
-            // Sauvegarder la liste mise à jour
             localStorage.setItem('listeCourses', JSON.stringify(liste));
             
-            // Mettre à jour l'affichage
             chargerListeCourses();
         }
     }
     
-    // Fonction pour supprimer un ingrédient
     function supprimerIngredient(index) {
         const liste = JSON.parse(localStorage.getItem('listeCourses')) || [];
         
-        // Vérifier que l'index existe dans la liste
         if (index >= 0 && index < liste.length) {
-            // Supprimer l'élément à l'index spécifié
             liste.splice(index, 1);
             
-            // Sauvegarder la liste mise à jour
             localStorage.setItem('listeCourses', JSON.stringify(liste));
             
-            // Mettre à jour l'affichage
             chargerListeCourses();
         }
     }
     
-    // Fonction pour ajouter un nouvel ingrédient depuis le champ texte
     function ajouterNouvelIngredient() {
         const texte = inputItem.value.trim();
         
         if (texte) {
             const liste = JSON.parse(localStorage.getItem('listeCourses')) || [];
             
-            // Vérifier si l'ingrédient existe déjà
             if (!liste.some(ingredient => ingredient.nom.toLowerCase() === texte.toLowerCase())) {
-                // Ajouter le nouvel ingrédient
                 liste.push({
                     nom: texte,
                     quantite: 1,
                     unite: ''
                 });
                 
-                // Sauvegarder la liste mise à jour
                 localStorage.setItem('listeCourses', JSON.stringify(liste));
                 
-                // Effacer le champ texte
                 inputItem.value = '';
                 
-                // Mettre à jour l'affichage
                 chargerListeCourses();
-            } else {
-                alert('Cet ingrédient est déjà dans la liste.');
             }
         }
     }
     
-    // Ajouter les écouteurs d'événements
     if (ajouterButton) {
         ajouterButton.addEventListener('click', ajouterNouvelIngredient);
     }
@@ -143,41 +118,63 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // Charger la liste initiale
     chargerListeCourses();
 });
-// Fonction pour télécharger la liste de courses en fichier texte
+
 function telechargerListeCourses() {
     const liste = JSON.parse(localStorage.getItem('listeCourses')) || [];
 
     if (liste.length === 0) {
-        alert('Votre liste de courses est vide.');
         return;
     }
 
-    // Convertir la liste en texte ou JSON (par exemple, format texte)
-    let contenuFichier = 'Liste de courses :\n\n';
-    liste.forEach(ingredient => {
-        contenuFichier += `${ingredient.nom} - ${ingredient.quantite} ${ingredient.unite}\n`;
-    });
-
-    // Créer un blob avec le contenu du fichier
-    const blob = new Blob([contenuFichier], { type: 'text/plain' });
-
-    // Créer un lien de téléchargement
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'liste_courses.txt'; // Nom du fichier à télécharger
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-
-    // Libérer l'URL
-    URL.revokeObjectURL(url);
+    // Vérifier si jsPDF est chargé, si non, l'inclure
+    if (typeof jsPDF === 'undefined') {
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+        script.onload = function() {
+            genererPDF(liste);
+        };
+        document.head.appendChild(script);
+    } else {
+        genererPDF(liste);
+    }
 }
 
-// Ajouter l'événement au bouton pour télécharger la liste
+function genererPDF(liste) {
+    // Créer un nouveau document PDF
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    
+    // Ajouter un titre
+    doc.setFontSize(18);
+    doc.text('Liste de courses', 105, 15, { align: 'center' });
+    
+    // Ajouter la date
+    const date = new Date();
+    doc.setFontSize(12);
+    doc.text(`Date: ${date.toLocaleDateString()}`, 20, 25);
+    
+    // Ajouter les éléments de la liste
+    doc.setFontSize(12);
+    let y = 35;
+    
+    liste.forEach((ingredient, index) => {
+        // Vérifier si nous avons besoin d'une nouvelle page
+        if (y > 280) {
+            doc.addPage();
+            y = 20;
+        }
+        
+        const texte = `${index + 1}. ${ingredient.nom} - ${ingredient.quantite} ${ingredient.unite}`;
+        doc.text(texte, 20, y);
+        y += 10;
+    });
+    
+    // Sauvegarder le PDF
+    doc.save('liste_courses.pdf');
+}
+
 const telechargerButton = document.getElementById('telecharger-button');
 if (telechargerButton) {
     telechargerButton.addEventListener('click', telechargerListeCourses);
